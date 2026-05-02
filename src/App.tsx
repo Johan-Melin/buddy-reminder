@@ -1,7 +1,7 @@
 import './App.css'
 
 import AppHeader from './app/layout/AppHeader'
-import DashboardPage from './features/contacts/pages/DeashboardPage'
+import AppRoutes from './app/routes/AppRoutes'
 
 function App() {
 
@@ -9,7 +9,7 @@ function App() {
     <>
       <AppHeader />
       <main>
-        <DashboardPage />
+        <AppRoutes />
       </main>
     </>
   )
