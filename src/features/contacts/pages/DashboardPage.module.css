@@ -1,0 +1,9 @@
+.cards {
+    display: grid;
+  }
+
+  @media (min-width: 1024px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
