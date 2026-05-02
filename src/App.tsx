@@ -1,5 +1,3 @@
-import './App.css'
-
 import AppHeader from './app/layout/AppHeader'
 import AppRoutes from './app/routes/AppRoutes'
 

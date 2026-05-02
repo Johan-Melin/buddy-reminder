@@ -1,13 +1,16 @@
 import { NavLink } from 'react-router-dom'
+import styles from './AppHeader.module.css'
 
 function AppHeader() {
   return (
-    <header>
-      <h1>AppHeader</h1>
-      <nav>
-        <NavLink to="/">Dashboard</NavLink>
-        <NavLink to="/contacts">Contacts</NavLink>
-      </nav>
+    <header className={styles.header}>
+      <div className={styles.container}>
+        <NavLink to="/" className={styles.brand}>Buddy Reminder</NavLink>
+        <nav className={styles.nav}>
+            <NavLink to="/">Dashboard</NavLink>
+            <NavLink to="/contacts">Contacts</NavLink>
+        </nav>
+      </div>
     </header>
   )
 }

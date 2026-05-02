@@ -1,0 +1,29 @@
+.header {
+  border-bottom: 1px solid var(--border);
+}
+
+.container {
+  min-height: 64px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.brand {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-h);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 24px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--text-h);
+}
