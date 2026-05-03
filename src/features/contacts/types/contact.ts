@@ -5,7 +5,7 @@ export interface Contact {
     id: string
     name: string
     relationship: RelationshipCategory
-    targetFrequencyDays?: number
+    targetFrequencyDays: number
     createdAt: string
     updatedAt: string
 }
