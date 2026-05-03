@@ -8,11 +8,11 @@ export interface Contact {
     targetFrequencyDays?: number
     createdAt: string
     updatedAt: string
-    contactHistory: ContactEvent[]
 }
 
 export interface ContactEvent {
     id: string
+    contactId: string
     date: string
     method: ContactMethod
 }
