@@ -1,4 +1,5 @@
 import type { Contact } from '../types/contact'
+import styles from './ContactCard.module.css'
 
 type ContactCardProps = {
   contact: Contact
@@ -6,7 +7,7 @@ type ContactCardProps = {
 
 function ContactCard({ contact }: ContactCardProps) {
   return (
-    <div>
+    <div className={styles.card}>
       <h3>{contact.name}</h3>
       <p>{contact.relationship}</p>
     </div>
