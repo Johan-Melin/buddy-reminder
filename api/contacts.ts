@@ -15,8 +15,19 @@ export async function GET(_request: Request) {
   const sql = neon(process.env.DATABASE_URL)
 
   try {
-    const result = await sql`select 'Neon connection working' as message`
-    return Response.json(result[0])
+    const contacts = await sql`
+      select
+        id,
+        name,
+        relationship,
+        target_frequency_days,
+        created_at,
+        updated_at
+      from contacts
+      order by name asc
+    `
+
+    return Response.json(contacts)
   } catch (error) {
     return Response.json(
       {
