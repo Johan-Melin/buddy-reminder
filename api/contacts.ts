@@ -1,10 +1,10 @@
 import { neon } from '@neondatabase/serverless'
 
-export default async function handler(request: Request): Promise<Response> {
-  if (request.method !== 'GET') {
-    return Response.json({ error: 'Method not allowed' }, { status: 405 })
-  }
+declare const process: {
+  env: Record<string, string | undefined>
+}
 
+export async function GET(_request: Request) {
   if (!process.env.DATABASE_URL) {
     return Response.json(
       { error: 'DATABASE_URL is not configured' },
@@ -16,7 +16,6 @@ export default async function handler(request: Request): Promise<Response> {
 
   try {
     const result = await sql`select 'Neon connection working' as message`
-
     return Response.json(result[0])
   } catch (error) {
     return Response.json(
