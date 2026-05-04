@@ -27,7 +27,16 @@ export async function GET(_request: Request) {
       order by name asc
     `
 
-    return Response.json(contacts)
+    const mappedContacts = contacts.map((contact) => ({
+      id: contact.id,
+      name: contact.name,
+      relationship: contact.relationship,
+      targetFrequencyDays: contact.target_frequency_days,
+      createdAt: contact.created_at,
+      updatedAt: contact.updated_at,
+    }))
+
+    return Response.json(mappedContacts)
   } catch (error) {
     return Response.json(
       {
