@@ -1,11 +1,10 @@
-import { asc } from 'drizzle-orm'
 import { getDb } from '../db'
 import {
   databaseErrorResponse,
   databaseNotConfiguredResponse,
 } from '../db/http'
 import { mapContact } from '../db/mappers/contacts'
-import { contactsTable } from '../db/schema'
+import { createContact, listContacts } from '../db/repositories/contacts'
 import {
   type CreateContactRequest,
   validateCreateContact,
@@ -19,10 +18,7 @@ export async function GET(_request: Request) {
   }
 
   try {
-    const contacts = await db
-      .select()
-      .from(contactsTable)
-      .orderBy(asc(contactsTable.name))
+    const contacts = await listContacts(db)
 
     return Response.json(contacts.map(mapContact))
   } catch (error) {
@@ -52,21 +48,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const now = new Date()
     const { name, relationship, targetFrequencyDays } = validationResult.data
-    const createdContacts = await db
-      .insert(contactsTable)
-      .values({
-        id: crypto.randomUUID(),
-        name,
-        relationship,
-        targetFrequencyDays,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .returning()
+    const createdContact = await createContact(db, {
+      name,
+      relationship,
+      targetFrequencyDays,
+    })
 
-    return Response.json(mapContact(createdContacts[0]), { status: 201 })
+    return Response.json(mapContact(createdContact), { status: 201 })
   } catch (error) {
     return databaseErrorResponse(error)
   }
