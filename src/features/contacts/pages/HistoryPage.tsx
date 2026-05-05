@@ -1,43 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { fetchContactEvents, fetchContacts } from '../lib/api'
 import type { Contact, ContactEvent } from '../types/contact'
 import styles from './HistoryPage.module.css'
 
 function HistoryPage() {
-  const [contacts, setContacts] = useState<Contact[]>([])
-  const [contactEvents, setContactEvents] = useState<ContactEvent[]>([])
-  const [error, setError] = useState<string | null>(null)
+  const { data: contacts = [], error: contactsError } = useQuery<Contact[]>({
+    queryKey: ['contacts'],
+    queryFn: fetchContacts,
+  })
 
-  useEffect(() => {
-    async function loadHistoryPageData() {
-      try {
-        const [contactsResponse, contactEventsResponse] = await Promise.all([
-          fetch('/api/contacts'),
-          fetch('/api/contact-events'),
-        ])
+  const { data: contactEvents = [], error: contactEventsError } = useQuery<
+    ContactEvent[]
+  >({
+    queryKey: ['contact-events'],
+    queryFn: fetchContactEvents,
+  })
 
-        if (!contactsResponse.ok || !contactEventsResponse.ok) {
-          throw new Error('Failed to fetch history data')
-        }
-
-        const [contactsData, contactEventsData] = await Promise.all([
-          contactsResponse.json(),
-          contactEventsResponse.json(),
-        ])
-
-        setContacts(contactsData)
-        setContactEvents(contactEventsData)
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : 'Unknown error occurred',
-        )
-      }
-    }
-
-    loadHistoryPageData()
-  }, [])
-
-  if (error) {
-    return <p>{error}</p>
+  if (contactsError || contactEventsError) {
+    return <p>{contactsError?.message ?? contactEventsError?.message}</p>
   }
 
   return (

@@ -1,12 +1,22 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { createContact } from '../lib/api'
 import styles from './ContactEditorPage.module.css'
 
 function ContactEditorPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { contactId } = useParams()
   const isEditing = Boolean(contactId)
   const [error, setError] = useState<string | null>(null)
+  const createContactMutation = useMutation({
+    mutationFn: createContact,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['contacts'] })
+      navigate('/contacts')
+    },
+  })
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -25,24 +35,11 @@ function ContactEditorPage() {
     )
 
     try {
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          relationship,
-          targetFrequencyDays,
-        }),
+      await createContactMutation.mutateAsync({
+        name,
+        relationship,
+        targetFrequencyDays,
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error ?? 'Failed to save contact')
-      }
-
-      navigate('/contacts')
     } catch (error) {
       setError(
         error instanceof Error ? error.message : 'Unknown error occurred',

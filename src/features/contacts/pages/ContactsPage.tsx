@@ -1,35 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { fetchContacts } from '../lib/api'
 import type { Contact } from '../types/contact'
 import styles from './ContactsPage.module.css'
 
 function ContactsPage() {
-  const [contacts, setContacts] = useState<Contact[]>([])
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function loadContacts() {
-      try {
-        const response = await fetch('/api/contacts')
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch contacts')
-        }
-
-        const data = await response.json()
-        setContacts(data)
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : 'Unknown error occurred',
-        )
-      }
-    }
-
-    loadContacts()
-  }, [])
+  const { data: contacts = [], error } = useQuery<Contact[]>({
+    queryKey: ['contacts'],
+    queryFn: fetchContacts,
+  })
 
   if (error) {
-    return <p>{error}</p>
+    return <p>{error.message}</p>
   }
 
   return (
