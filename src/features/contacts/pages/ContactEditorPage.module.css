@@ -1,0 +1,10 @@
+.form > div {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.cancelButton {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
