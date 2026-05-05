@@ -1,17 +1,6 @@
-import { neon } from '@neondatabase/serverless'
-
-declare const process: {
-  env: Record<string, string | undefined>
-}
-
-type ContactRow = {
-  id: string
-  name: string
-  relationship: string
-  target_frequency_days: number
-  created_at: string
-  updated_at: string
-}
+import { asc } from 'drizzle-orm'
+import { getDb } from '../db'
+import { contactsTable } from '../db/schema'
 
 type CreateContactRequest = {
   name?: string
@@ -26,29 +15,28 @@ const validRelationships = new Set([
   'other',
 ])
 
-function mapContact(contact: ContactRow) {
+function mapContact(contact: {
+  id: string
+  name: string
+  relationship: string
+  targetFrequencyDays: number
+  createdAt: Date
+  updatedAt: Date
+}) {
   return {
     id: contact.id,
     name: contact.name,
     relationship: contact.relationship,
-    targetFrequencyDays: contact.target_frequency_days,
-    createdAt: contact.created_at,
-    updatedAt: contact.updated_at,
+    targetFrequencyDays: contact.targetFrequencyDays,
+    createdAt: contact.createdAt.toISOString(),
+    updatedAt: contact.updatedAt.toISOString(),
   }
-}
-
-function getSql() {
-  if (!process.env.DATABASE_URL) {
-    return null
-  }
-
-  return neon(process.env.DATABASE_URL)
 }
 
 export async function GET(_request: Request) {
-  const sql = getSql()
+  const db = getDb()
 
-  if (!sql) {
+  if (!db) {
     return Response.json(
       { error: 'DATABASE_URL is not configured' },
       { status: 500 },
@@ -56,23 +44,12 @@ export async function GET(_request: Request) {
   }
 
   try {
-    const contacts = await sql`
-      select
-        id,
-        name,
-        relationship,
-        target_frequency_days,
-        created_at,
-        updated_at
-      from contacts
-      order by name asc
-    `
+    const contacts = await db
+      .select()
+      .from(contactsTable)
+      .orderBy(asc(contactsTable.name))
 
-    const mappedContacts = contacts.map((contact) =>
-      mapContact(contact as ContactRow),
-    )
-
-    return Response.json(mappedContacts)
+    return Response.json(contacts.map(mapContact))
   } catch (error) {
     return Response.json(
       {
@@ -85,9 +62,9 @@ export async function GET(_request: Request) {
 }
 
 export async function POST(request: Request) {
-  const sql = getSql()
+  const db = getDb()
 
-  if (!sql) {
+  if (!db) {
     return Response.json(
       { error: 'DATABASE_URL is not configured' },
       { status: 500 },
@@ -125,38 +102,21 @@ export async function POST(request: Request) {
     )
   }
 
-  const id = crypto.randomUUID()
-  const now = new Date().toISOString()
-
   try {
-    const createdContacts = await sql`
-      insert into contacts (
-        id,
+    const now = new Date()
+    const createdContacts = await db
+      .insert(contactsTable)
+      .values({
+        id: crypto.randomUUID(),
         name,
         relationship,
-        target_frequency_days,
-        created_at,
-        updated_at
-      ) values (
-        ${id},
-        ${name},
-        ${relationship},
-        ${targetFrequencyDays},
-        ${now},
-        ${now}
-      )
-      returning
-        id,
-        name,
-        relationship,
-        target_frequency_days,
-        created_at,
-        updated_at
-    `
+        targetFrequencyDays,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning()
 
-    return Response.json(mapContact(createdContacts[0] as ContactRow), {
-      status: 201,
-    })
+    return Response.json(mapContact(createdContacts[0]), { status: 201 })
   } catch (error) {
     return Response.json(
       {
