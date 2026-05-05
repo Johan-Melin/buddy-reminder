@@ -63,19 +63,19 @@ const mockContactHistory: ContactEvent[] = [
   {
     id: '1',
     contactId: '3',
-    date: '2026-02-03T19:30:00.000Z',
+    occurredAt: '2026-02-03T19:30:00.000Z',
     method: 'phone',
   },
   {
     id: '2',
     contactId: '6',
-    date: '2026-03-14T12:15:00.000Z',
+    occurredAt: '2026-03-14T12:15:00.000Z',
     method: 'message',
   },
   {
     id: '3',
     contactId: '3',
-    date: '2026-04-27T08:00:00.000Z',
+    occurredAt: '2026-04-27T08:00:00.000Z',
     method: 'meeting',
   },
 ]

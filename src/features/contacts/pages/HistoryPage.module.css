@@ -1,0 +1,17 @@
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.row > * {
+  flex: 1;
+  text-align: left;
+}

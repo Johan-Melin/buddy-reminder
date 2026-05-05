@@ -11,9 +11,9 @@ function DashboardPage() {
           const lastContacted = mockContactHistory
             .filter((event) => event.contactId === contact.id)
             .toSorted((firstEvent, secondEvent) =>
-              secondEvent.date.localeCompare(firstEvent.date),
+              secondEvent.occurredAt.localeCompare(firstEvent.occurredAt),
             )
-            .at(0)?.date
+            .at(0)?.occurredAt
 
           return (
             <ContactCard

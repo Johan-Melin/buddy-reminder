@@ -9,6 +9,7 @@ function AppHeader() {
         <nav className={styles.nav}>
             <NavLink to="/">Dashboard</NavLink>
             <NavLink to="/contacts">Contacts</NavLink>
+            <NavLink to="/history">History</NavLink>
         </nav>
       </div>
     </header>

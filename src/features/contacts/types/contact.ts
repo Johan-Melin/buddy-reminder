@@ -13,6 +13,6 @@ export interface Contact {
 export interface ContactEvent {
     id: string
     contactId: string
-    date: string
+    occurredAt: string
     method: ContactMethod
 }
