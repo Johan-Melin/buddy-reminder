@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { Contact } from '../types/contact'
 import styles from './ContactsPage.module.css'
 
@@ -34,6 +35,7 @@ function ContactsPage() {
   return (
     <div>
       <h1>Contacts</h1>
+      <Link to="/contacts/new">Add contact</Link>
       <div className={styles.list}>
         {contacts.map((contact) => (
           <div key={contact.id} className={styles.row}>

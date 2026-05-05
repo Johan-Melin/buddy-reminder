@@ -1,9 +1,54 @@
-import { useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import styles from './ContactEditorPage.module.css'
 
 function ContactEditorPage() {
+  const navigate = useNavigate()
   const { contactId } = useParams()
   const isEditing = Boolean(contactId)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (isEditing) {
+      return
+    }
+
+    setError(null)
+
+    const formData = new FormData(event.currentTarget)
+    const name = formData.get('name')?.toString() ?? ''
+    const relationship = formData.get('relationship')?.toString() ?? ''
+    const targetFrequencyDays = Number(
+      formData.get('targetFrequencyDays')?.toString(),
+    )
+
+    try {
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          relationship,
+          targetFrequencyDays,
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error ?? 'Failed to save contact')
+      }
+
+      navigate('/contacts')
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      )
+    }
+  }
 
   return (
     <div>
@@ -17,7 +62,7 @@ function ContactEditorPage() {
       </header>
 
       <section>
-        <form className={styles.form}>
+        <form className={styles.form} onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name">Name</label>
             <input id="name" name="name" type="text" />
@@ -38,11 +83,17 @@ function ContactEditorPage() {
             />
           </div>
 
+          {error ? <p>{error}</p> : null}
+
           <div>
             <button type="submit">
               {isEditing ? 'Save changes' : 'Add contact'}
             </button>
-            <button type="button" className={styles.cancelButton}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={() => navigate('/contacts')}
+            >
               Cancel
             </button>
           </div>
