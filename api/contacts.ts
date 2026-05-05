@@ -1,5 +1,9 @@
 import { asc } from 'drizzle-orm'
 import { getDb } from '../db'
+import {
+  databaseErrorResponse,
+  databaseNotConfiguredResponse,
+} from '../db/http'
 import { mapContact } from '../db/mappers/contacts'
 import { contactsTable } from '../db/schema'
 import {
@@ -11,10 +15,7 @@ export async function GET(_request: Request) {
   const db = getDb()
 
   if (!db) {
-    return Response.json(
-      { error: 'DATABASE_URL is not configured' },
-      { status: 500 },
-    )
+    return databaseNotConfiguredResponse()
   }
 
   try {
@@ -25,13 +26,7 @@ export async function GET(_request: Request) {
 
     return Response.json(contacts.map(mapContact))
   } catch (error) {
-    return Response.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Unknown database error',
-      },
-      { status: 500 },
-    )
+    return databaseErrorResponse(error)
   }
 }
 
@@ -39,10 +34,7 @@ export async function POST(request: Request) {
   const db = getDb()
 
   if (!db) {
-    return Response.json(
-      { error: 'DATABASE_URL is not configured' },
-      { status: 500 },
-    )
+    return databaseNotConfiguredResponse()
   }
 
   let body: CreateContactRequest
@@ -76,12 +68,6 @@ export async function POST(request: Request) {
 
     return Response.json(mapContact(createdContacts[0]), { status: 201 })
   } catch (error) {
-    return Response.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Unknown database error',
-      },
-      { status: 500 },
-    )
+    return databaseErrorResponse(error)
   }
 }

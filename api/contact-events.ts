@@ -1,5 +1,9 @@
 import { asc } from 'drizzle-orm'
 import { getDb } from '../db'
+import {
+  databaseErrorResponse,
+  databaseNotConfiguredResponse,
+} from '../db/http'
 import { contactEventsTable } from '../db/schema'
 
 function mapContactEvent(contactEvent: {
@@ -20,10 +24,7 @@ export async function GET(_request: Request) {
   const db = getDb()
 
   if (!db) {
-    return Response.json(
-      { error: 'DATABASE_URL is not configured' },
-      { status: 500 },
-    )
+    return databaseNotConfiguredResponse()
   }
 
   try {
@@ -34,12 +35,6 @@ export async function GET(_request: Request) {
 
     return Response.json(contactEvents.map(mapContactEvent))
   } catch (error) {
-    return Response.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Unknown database error',
-      },
-      { status: 500 },
-    )
+    return databaseErrorResponse(error)
   }
 }
