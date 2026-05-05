@@ -1,5 +1,6 @@
 import { asc } from 'drizzle-orm'
 import { getDb } from '../db'
+import { mapContact } from '../db/mappers/contacts'
 import { contactsTable } from '../db/schema'
 
 type CreateContactRequest = {
@@ -14,24 +15,6 @@ const validRelationships = new Set([
   'colleague',
   'other',
 ])
-
-function mapContact(contact: {
-  id: string
-  name: string
-  relationship: string
-  targetFrequencyDays: number
-  createdAt: Date
-  updatedAt: Date
-}) {
-  return {
-    id: contact.id,
-    name: contact.name,
-    relationship: contact.relationship,
-    targetFrequencyDays: contact.targetFrequencyDays,
-    createdAt: contact.createdAt.toISOString(),
-    updatedAt: contact.updatedAt.toISOString(),
-  }
-}
 
 export async function GET(_request: Request) {
   const db = getDb()
