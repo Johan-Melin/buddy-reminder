@@ -7,7 +7,7 @@ function AppHeader() {
       <div className={styles.container}>
         <NavLink to="/" className={styles.brand}>Buddy Reminder</NavLink>
         <nav className={styles.nav}>
-            <NavLink to="/">Dashboard</NavLink>
+            <NavLink to="/">Reminders</NavLink>
             <NavLink to="/contacts">Contacts</NavLink>
             <NavLink to="/history">History</NavLink>
         </nav>

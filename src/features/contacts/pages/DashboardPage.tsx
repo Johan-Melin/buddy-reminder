@@ -5,7 +5,7 @@ import styles from './DashboardPage.module.css'
 function DashboardPage() {
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Reminders</h1>
       <div className={styles.cards}>
         {mockContacts.map((contact) => {
           const lastContacted = mockContactHistory
