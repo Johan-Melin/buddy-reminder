@@ -1,38 +1,38 @@
-import { neon } from '@neondatabase/serverless'
+import { asc } from 'drizzle-orm'
+import { getDb } from '../db'
+import { contactEventsTable } from '../db/schema'
 
-declare const process: {
-  env: Record<string, string | undefined>
+function mapContactEvent(contactEvent: {
+  id: string
+  contactId: string
+  occurredAt: Date
+  method: string
+}) {
+  return {
+    id: contactEvent.id,
+    contactId: contactEvent.contactId,
+    occurredAt: contactEvent.occurredAt.toISOString(),
+    method: contactEvent.method,
+  }
 }
 
 export async function GET(_request: Request) {
-  if (!process.env.DATABASE_URL) {
+  const db = getDb()
+
+  if (!db) {
     return Response.json(
       { error: 'DATABASE_URL is not configured' },
       { status: 500 },
     )
   }
 
-  const sql = neon(process.env.DATABASE_URL)
-
   try {
-    const contactEvent = await sql`
-      select
-        id,
-        contact_id,
-        date,
-        method
-      from contact_events
-      order by date asc
-    `
+    const contactEvents = await db
+      .select()
+      .from(contactEventsTable)
+      .orderBy(asc(contactEventsTable.occurredAt))
 
-    const mappedContacts = contactEvent.map((contact) => ({
-      id: contact.id,
-      contactId: contact.contact_id,
-      occurredAt: contact.date,
-      method: contact.method,
-    }))
-
-    return Response.json(mappedContacts)
+    return Response.json(contactEvents.map(mapContactEvent))
   } catch (error) {
     return Response.json(
       {
